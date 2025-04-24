@@ -27,8 +27,8 @@ This is a simple Ruby on Rails application for processing point transactions via
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/points-api.git
-cd points-api
+git clone https://github.com/chabzlala29/point_processor_api.git
+cd point_processor_api
 ```
 
 ### 2. Install Dependencies

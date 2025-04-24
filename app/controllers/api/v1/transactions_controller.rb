@@ -11,12 +11,16 @@ module Api
         if transaction.save
           render_success({ transaction_id: transaction.transaction_id })
         else
-          render_error(transaction.errors.full_messages)
+          render_error(message: transaction.errors.full_messages)
         end
       end
 
       def bulk
-        transactions = params[:transactions].map do |transaction|
+        # When submitting empty array from client request,
+        # it might receive a one element array with empty string,
+        # so having a pre-emptive select for presence is needed to avoid
+        # fetching unwanted transaction object.
+        transactions = params[:transactions].select(&:presence).map do |transaction|
           Transaction.new(transaction.permit(WRITE_PERMITTED_PARAMS))
         end
 
@@ -26,7 +30,7 @@ module Api
 
         render_success({ processed_count: transactions.size })
       rescue ActiveRecord::RecordInvalid => e
-        render_error(e.message)
+        render_error(message: e.message)
       end
 
       private

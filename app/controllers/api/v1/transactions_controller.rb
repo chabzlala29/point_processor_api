@@ -3,8 +3,11 @@ module Api
     class TransactionsController < ApplicationController
       include ResponseRendererConcern
 
+      WRITE_PERMITTED_PARAMS = %i[transaction_id points user_id].freeze
+
       def single
         transaction = Transaction.new(transaction_params)
+
         if transaction.save
           render_success({ transaction_id: transaction.transaction_id })
         else
@@ -13,8 +16,8 @@ module Api
       end
 
       def bulk
-        transactions = params[:transactions].map do |tx|
-          Transaction.new(tx.permit(:transaction_id, :points, :user_id))
+        transactions = params[:transactions].map do |transaction|
+          Transaction.new(transaction.permit(WRITE_PERMITTED_PARAMS))
         end
 
         Transaction.transaction do
@@ -29,7 +32,7 @@ module Api
       private
 
       def transaction_params
-        params.permit(:transaction_id, :points, :user_id)
+        params.permit(WRITE_PERMITTED_PARAMS)
       end
     end
   end
